@@ -41,6 +41,7 @@ public class BossBehavior : MonoBehaviour
     private float scale;
     private float currentScale;
 
+    private bool isFlipping { get { return scale != targetScale; } }
     private float distance { get { return Vector2.Distance(transform.position, player.position); } }
     private int targetScale { get { return player.position.x < transform.position.x ? -1 : 1; } }
 
@@ -65,7 +66,7 @@ public class BossBehavior : MonoBehaviour
 
     private void Flip()
     {
-        if (targetScale == scale) return;
+        if (targetScale == scale || isIdle || isAttacking) return;
 
         // flip animation
         scale = !animateFlip ? targetScale :
@@ -79,7 +80,7 @@ public class BossBehavior : MonoBehaviour
     private void Attack()
     {
         if (distance <= attackRange) animator.SetTrigger("Attack");
-        if (!canAttack || isIdle) return;
+        if (!canAttack || isIdle || isFlipping) return;
         StartCoroutine(DashAttack());
     }
 
@@ -87,7 +88,7 @@ public class BossBehavior : MonoBehaviour
     {
         animator.SetBool("IsWalking", body.velocity.magnitude > 0.75f);
 
-        if (distance < attackRange || isAttacking || isIdle) return;
+        if (distance < attackRange || isAttacking || isIdle || isFlipping) return;
 
         Vector3 velocity = body.velocity;
         velocity.x = Mathf.Clamp(player.position.x - transform.position.x, -1, 1);
