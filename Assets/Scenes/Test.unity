@@ -3886,11 +3886,12 @@ MonoBehaviour:
   turnSpeed: 120
   speed: 2
   idleTime: 1.75
-  attackRange: 2
   trailSize: 0.5
+  attackRange: 2
+  attackZone: {fileID: 1078121900}
   dashSpeed: 35
   dashAttackCooldown: 6
-  dashAttackDuration: 0.15
+  dashAttackDuration: 0.45
 --- !u!96 &317984652
 TrailRenderer:
   serializedVersion: 2

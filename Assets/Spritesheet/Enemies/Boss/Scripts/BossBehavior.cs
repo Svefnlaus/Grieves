@@ -13,11 +13,13 @@ public class BossBehavior : MonoBehaviour
     [Space]
     [Range (0.1f, 50)] [SerializeField] private float speed;
     [Range (0.1f, 50)] [SerializeField] private float idleTime;
-    [Range (0.1f, 50)] [SerializeField] private float attackRange;
     [Space]
     [Range (0, 1)] [SerializeField] private float trailSize;
+    [Space] [Header ("Attack Settings")]
+    [Range (0.1f, 50)] [SerializeField] private float attackRange;
+    [SerializeField] private Collider2D attackZone;
 
-    [Space] [Header("Dash Settings")]
+    [Space] [Header ("Dash Settings")]
     [Range (0.1f, 50)] [SerializeField] private float dashSpeed;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackCooldown;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackDuration;
@@ -42,7 +44,17 @@ public class BossBehavior : MonoBehaviour
     private float currentScale;
 
     private bool isFlipping { get { return scale != targetScale; } }
-    private float distance { get { return Vector2.Distance(transform.position, player.position); } }
+    private bool attacking { get { return animator.GetBool("IsAttacking"); } }
+    private float distance
+    { 
+        get
+        {
+            float dis = Vector2.Distance(transform.position, player.position);
+            animator.SetBool("IsAttacking", dis <= attackRange);
+            attackZone.gameObject.SetActive(attacking);
+            return dis;
+        }
+    }
     private int targetScale { get { return player.position.x < transform.position.x ? -1 : 1; } }
 
     #endregion
@@ -66,7 +78,7 @@ public class BossBehavior : MonoBehaviour
 
     private void Flip()
     {
-        if (targetScale == scale || isIdle || isAttacking) return;
+        if (targetScale == scale || isIdle) return;
 
         // flip animation
         scale = !animateFlip ? targetScale :
@@ -79,7 +91,6 @@ public class BossBehavior : MonoBehaviour
 
     private void Attack()
     {
-        if (distance <= attackRange) animator.SetTrigger("Attack");
         if (!canAttack || isIdle || isFlipping) return;
         StartCoroutine(DashAttack());
     }
@@ -101,8 +112,10 @@ public class BossBehavior : MonoBehaviour
     {
         canAttack = false;
         isAttacking = true;
+
         isIdle = true;
         yield return new WaitForSeconds(idleTime);
+        isIdle = false;
 
         Vector3 targetLocation = player.position;
 
@@ -117,13 +130,10 @@ public class BossBehavior : MonoBehaviour
             transform.position = Vector3.SmoothDamp(transform.position, targetLocation, ref currentVelocity, 0.01f, dashSpeed);
             yield return null;
         }
-
-        animator.SetTrigger("Attack");
         trail.time = 0;
 
         yield return new WaitForSeconds(dashAttackDuration);
         isAttacking = false;
-        isIdle = false;
 
         yield return new WaitForSeconds(dashAttackCooldown);
         canAttack = true;
