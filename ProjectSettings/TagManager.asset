@@ -10,6 +10,7 @@ TagManager:
   - areaattack
   - zone
   - Bats
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -55,4 +56,7 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 2682957463
+    locked: 0
+  - name: UI
+    uniqueID: 1496043319
     locked: 0

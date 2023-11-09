@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BossBehavior : MonoBehaviour
 {
@@ -7,25 +8,35 @@ public class BossBehavior : MonoBehaviour
 
     [Space] [Header ("Behavior Settings")]
     [SerializeField] private Transform player;
-    [Space]
-    [SerializeField] private bool animateFlip;
-    [Range (1, 1000)] [SerializeField] private int turnSpeed;
+    [SerializeField] private GameObject parent;
+
+    [Space] [Header ("Boss Settings")]
+    [SerializeField] private BossHealth health;
+    [Range (10, 1000)] [SerializeField] private float maxHealth;
     [Space]
     [Range (0.1f, 50)] [SerializeField] private float speed;
     [Range (0.1f, 50)] [SerializeField] private float idleTime;
     [Space]
-    [Range (0, 1)] [SerializeField] private float trailSize;
+    [SerializeField] private bool animateFlip;
+    [Range(1, 1000)][SerializeField] private int turnSpeed;
+
+    [Space] [Header("Trail Settings")]
+    [Range (0.1f, 1)] [SerializeField] private float trailSize;
+    [Range (1, 1000)] [SerializeField] private int trailSpeed;
+
     [Space] [Header ("Attack Settings")]
     [Range (0.1f, 50)] [SerializeField] private float attackRange;
     [SerializeField] private Collider2D attackZone;
 
     [Space] [Header ("Dash Settings")]
+    [Range (0.1f, 50)] [SerializeField] private float chargeTime;
     [Range (0.1f, 50)] [SerializeField] private float dashSpeed;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackCooldown;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackDuration;
 
     private Rigidbody2D body;
     private Animator animator;
+    private TrailRenderer trail;
 
     #endregion
 
@@ -40,21 +51,38 @@ public class BossBehavior : MonoBehaviour
 
     private Vector3 currentVelocity;
 
+    private float currentHealth;
+
     private float scale;
     private float currentScale;
 
+    private float trailTime;
+    private float trailVelocity;
+
+    private bool isDead
+    { 
+        get
+        {
+            bool dead = (health.GetComponent<Slider>().value < 0.1f);
+            if (dead) parent.SetActive(false);
+            return dead;
+        }
+    }
     private bool isFlipping { get { return scale != targetScale; } }
     private bool attacking { get { return animator.GetBool("IsAttacking"); } }
     private float distance
     { 
         get
         {
+            if (isIdle) return 0;
             float dis = Vector2.Distance(transform.position, player.position);
             animator.SetBool("IsAttacking", dis <= attackRange);
             attackZone.gameObject.SetActive(attacking);
             return dis;
         }
     }
+
+    private float smoothFlip { get { return Mathf.SmoothDamp(scale, targetScale, ref currentScale, 0.1f * Time.deltaTime, turnSpeed); } }
     private int targetScale { get { return player.position.x < transform.position.x ? -1 : 1; } }
 
     #endregion
@@ -63,17 +91,38 @@ public class BossBehavior : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        trail = GetComponent<TrailRenderer>();
+    }
 
-        enraged = false;
+    private void Start()
+    {
+        health.SetMaxHealth(maxHealth);
+        currentHealth = maxHealth;
+
         isAttacking = false;
         canAttack = true;
+        enraged = false;
     }
 
     private void Update()
     {
+        if (isDead) return;
         Move();
         Flip();
         Attack();
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Player") || !isAttacking) return;
+        Debug.Log("dash hit");
+    }
+
+    // Testing damage
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!other.CompareTag("zone")) return;
+        TakeDamage(5);
     }
 
     private void Flip()
@@ -81,12 +130,24 @@ public class BossBehavior : MonoBehaviour
         if (targetScale == scale || isIdle) return;
 
         // flip animation
-        scale = !animateFlip ? targetScale :
-            Mathf.SmoothDamp(scale, targetScale, ref currentScale, 0.1f * Time.deltaTime, turnSpeed);
+        scale = !animateFlip ? targetScale : smoothFlip;
 
         // normal flip;
 
         transform.localScale = new Vector2(scale, 1);
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        currentHealth = (currentHealth <= 0) ? 0 : currentHealth;
+        BossHealth.currentHealth = currentHealth;
+    }
+
+    private void Trail()
+    {
+        if (trail.time == trailTime) return;
+        trail.time = Mathf.SmoothDamp(trail.time, trailTime, ref trailVelocity, 0.01f * Time.deltaTime, trailSpeed);
     }
 
     private void Attack()
@@ -97,6 +158,7 @@ public class BossBehavior : MonoBehaviour
 
     private void Move()
     {
+        Trail();
         animator.SetBool("IsWalking", body.velocity.magnitude > 0.75f);
 
         if (distance < attackRange || isAttacking || isIdle || isFlipping) return;
@@ -111,18 +173,17 @@ public class BossBehavior : MonoBehaviour
     private IEnumerator DashAttack()
     {
         canAttack = false;
-        isAttacking = true;
 
         isIdle = true;
         yield return new WaitForSeconds(idleTime);
         isIdle = false;
 
+        trailTime = trailSize;
+
         Vector3 targetLocation = player.position;
-
-        TrailRenderer trail = GetComponent<TrailRenderer>();
-        trail.time = trailSize;
-
         float position = Vector3.Distance(transform.position, targetLocation);
+
+        isAttacking = true;
 
         while (position >= attackRange)
         {
@@ -130,7 +191,7 @@ public class BossBehavior : MonoBehaviour
             transform.position = Vector3.SmoothDamp(transform.position, targetLocation, ref currentVelocity, 0.01f, dashSpeed);
             yield return null;
         }
-        trail.time = 0;
+        trailTime = 0;
 
         yield return new WaitForSeconds(dashAttackDuration);
         isAttacking = false;
