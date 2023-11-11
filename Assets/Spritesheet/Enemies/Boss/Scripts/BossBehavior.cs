@@ -9,6 +9,7 @@ public class BossBehavior : MonoBehaviour
     [Space] [Header ("Behavior Settings")]
     [SerializeField] private Transform player;
     [SerializeField] private GameObject parent;
+    [SerializeField] private GameObject gate;
 
     [Space] [Header ("Boss Settings")]
     [SerializeField] private BossHealth health;
@@ -26,17 +27,21 @@ public class BossBehavior : MonoBehaviour
 
     [Space] [Header ("Attack Settings")]
     [Range (0.1f, 50)] [SerializeField] private float attackRange;
+    [Range (0.1f, 50)] [SerializeField] private float attackDamage;
     [SerializeField] private Collider2D attackZone;
+    public static float bossNormalAttack;
 
     [Space] [Header ("Dash Settings")]
     [Range (0.1f, 50)] [SerializeField] private float chargeTime;
     [Range (0.1f, 50)] [SerializeField] private float dashSpeed;
+    [Range (0.1f, 50)] [SerializeField] private float dashDamage;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackCooldown;
     [Range (0.1f, 50)] [SerializeField] private float dashAttackDuration;
 
     private Rigidbody2D body;
     private Animator animator;
     private TrailRenderer trail;
+    private ParticleSystem particles;
 
     #endregion
 
@@ -58,18 +63,6 @@ public class BossBehavior : MonoBehaviour
 
     private float trailTime;
     private float trailVelocity;
-    public GameObject Gate;
-
-    private bool isDead
-    { 
-        get
-        {
-            bool dead = (health.GetComponent<Slider>().value < 0.1f);
-            Gate.SetActive(false);
-            if (dead) parent.SetActive(false);
-            return dead;
-        }
-    }
     private bool isFlipping { get { return scale != targetScale; } }
     private bool attacking { get { return animator.GetBool("IsAttacking"); } }
     private float distance
@@ -89,19 +82,35 @@ public class BossBehavior : MonoBehaviour
 
     #endregion
 
+    private bool isDead
+    { 
+        get
+        {
+            bool dead = (health.GetComponent<Slider>().value < 0.1f);
+            if (dead) gate.SetActive(false);
+            if (dead) parent.SetActive(false);
+            return dead;
+        }
+    }
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         trail = GetComponent<TrailRenderer>();
+
+        particles = GetComponentInChildren<ParticleSystem>();
+
+        bossNormalAttack = attackDamage;
     }
 
     private void Start()
     {
         health.SetMaxHealth(maxHealth);
         currentHealth = maxHealth;
-        Gate.SetActive(true);
 
+        var duration = particles.main;
+        duration.duration = chargeTime;
 
         isAttacking = false;
         canAttack = true;
@@ -119,6 +128,8 @@ public class BossBehavior : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.CompareTag("Player") || !isAttacking) return;
+        TryGetComponent<Hpmanager>(out Hpmanager player);
+        player.TakeDamage(dashDamage);
         Debug.Log("dash hit");
     }
 
@@ -135,8 +146,6 @@ public class BossBehavior : MonoBehaviour
 
         // flip animation
         scale = !animateFlip ? targetScale : smoothFlip;
-
-        // normal flip;
 
         transform.localScale = new Vector2(scale, 1);
     }
@@ -177,7 +186,7 @@ public class BossBehavior : MonoBehaviour
     private IEnumerator DashAttack()
     {
         canAttack = false;
-
+        particles.Play();
         isIdle = true;
         yield return new WaitForSeconds(idleTime);
         isIdle = false;
