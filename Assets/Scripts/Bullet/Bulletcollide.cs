@@ -20,14 +20,14 @@ public class Bulletcollide : MonoBehaviour
       
         if (collision.gameObject.CompareTag("Boss"))
         {
-            StartCoroutine(DamageBoss());
+            StartCoroutine(DamageBoss(collision));
         }
     }
 
-    IEnumerator DamageBoss()
+    IEnumerator DamageBoss(Collision2D other)
     {
         bold.Play();
-        TryGetComponent<BossBehavior>(out BossBehavior boss);
+        other.gameObject.TryGetComponent<BossBehavior>(out BossBehavior boss);
         boss.TakeDamage(14);
         yield return new WaitForSeconds(0.01f);
         Destroy(gameObject);

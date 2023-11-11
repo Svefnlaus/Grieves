@@ -119,7 +119,7 @@ public class BossBehavior : MonoBehaviour
 
     private void Update()
     {
-        if (isDead) return;
+        if (isDead || player == null) return;
         Move();
         Flip();
         Attack();
@@ -128,7 +128,7 @@ public class BossBehavior : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.CompareTag("Player") || !isAttacking) return;
-        TryGetComponent<Hpmanager>(out Hpmanager player);
+        other.gameObject.TryGetComponent<Hpmanager>(out Hpmanager player);
         player.TakeDamage(dashDamage);
         Debug.Log("dash hit");
     }

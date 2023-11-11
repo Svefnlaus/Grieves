@@ -33,14 +33,14 @@ public class Bullet : MonoBehaviour
 
         if (other.CompareTag("Boss"))
         {
-            StartCoroutine(DamageBoss());
+            StartCoroutine(DamageBoss(other));
         }
     }
 
-    IEnumerator DamageBoss()
+    IEnumerator DamageBoss(Collider2D other)
     {
         bold.Play();
-        TryGetComponent<BossBehavior>(out BossBehavior boss);
+        other.TryGetComponent<BossBehavior>(out BossBehavior boss);
         boss.TakeDamage(14);
         yield return new WaitForSeconds(0.01f);
         Destroy(gameObject);
