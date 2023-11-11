@@ -3897,6 +3897,7 @@ MonoBehaviour:
   dashSpeed: 40
   dashAttackCooldown: 5
   dashAttackDuration: 0.45
+  Gate: {fileID: 377366702}
 --- !u!96 &317984652
 TrailRenderer:
   serializedVersion: 2
