@@ -58,12 +58,14 @@ public class BossBehavior : MonoBehaviour
 
     private float trailTime;
     private float trailVelocity;
+    public GameObject Gate;
 
     private bool isDead
     { 
         get
         {
             bool dead = (health.GetComponent<Slider>().value < 0.1f);
+            Gate.SetActive(false);
             if (dead) parent.SetActive(false);
             return dead;
         }
@@ -98,6 +100,8 @@ public class BossBehavior : MonoBehaviour
     {
         health.SetMaxHealth(maxHealth);
         currentHealth = maxHealth;
+        Gate.SetActive(true);
+
 
         isAttacking = false;
         canAttack = true;
