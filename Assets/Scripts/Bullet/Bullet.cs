@@ -29,8 +29,22 @@ public class Bullet : MonoBehaviour
             Destroy(other.gameObject);
             Destroy(gameObject);
 
-
         }
+
+        if (other.CompareTag("Boss"))
+        {
+            StartCoroutine(DamageBoss());
+        }
+    }
+
+    IEnumerator DamageBoss()
+    {
+        bold.Play();
+        TryGetComponent<BossBehavior>(out BossBehavior boss);
+        boss.TakeDamage(14);
+        yield return new WaitForSeconds(0.01f);
+        Destroy(gameObject);
+        yield return null;
     }
 
     IEnumerator DestroyAfterDelay(float delay)
