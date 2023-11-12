@@ -9,11 +9,13 @@ public class Hpmanager : MonoBehaviour
     public float hpamount = 100f;
     public float knockbackForce = 5f; // Adjust the knockback force as needed
 
+
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -51,6 +53,7 @@ public class Hpmanager : MonoBehaviour
         if (hpamount <= 0)
         {
             Die(); // Call a function to handle player death
+          
             Destroy(gameObject);
         }
     }
