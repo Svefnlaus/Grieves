@@ -129,6 +129,7 @@ public class BossBehavior : MonoBehaviour
     {
         if (!other.gameObject.CompareTag("Player") || !isAttacking) return;
         other.gameObject.TryGetComponent<Hpmanager>(out Hpmanager player);
+        if (player == null) return;
         player.TakeDamage(dashDamage);
         Debug.Log("dash hit");
     }

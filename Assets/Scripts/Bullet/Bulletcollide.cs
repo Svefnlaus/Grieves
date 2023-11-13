@@ -32,6 +32,7 @@ public class Bulletcollide : MonoBehaviour
     {
         bold.Play();
         other.gameObject.TryGetComponent<BossBehavior>(out BossBehavior boss);
+        if (boss == null) yield return null;
         boss.TakeDamage(14);
         yield return new WaitForSeconds(0.01f);
         Destroy(gameObject);

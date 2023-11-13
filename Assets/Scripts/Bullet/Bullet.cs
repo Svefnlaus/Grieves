@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -41,6 +42,7 @@ public class Bullet : MonoBehaviour
     {
         bold.Play();
         other.TryGetComponent<BossBehavior>(out BossBehavior boss);
+        if (boss == null) yield return null;
         boss.TakeDamage(14);
         yield return new WaitForSeconds(0.01f);
         Destroy(gameObject);
