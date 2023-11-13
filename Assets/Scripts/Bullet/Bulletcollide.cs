@@ -22,6 +22,10 @@ public class Bulletcollide : MonoBehaviour
         {
             StartCoroutine(DamageBoss(collision));
         }
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     IEnumerator DamageBoss(Collision2D other)
