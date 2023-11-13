@@ -9,6 +9,7 @@ public class Hpmanager : MonoBehaviour
     public float hpamount = 100f;
     public float knockbackForce = 5f; // Adjust the knockback force as needed
     public AudioSource heal;
+    
 
 
     private Rigidbody2D rb;
@@ -39,6 +40,7 @@ public class Hpmanager : MonoBehaviour
             }
             else
             {
+              
                 Debug.Log("HP is already full");
             }
 
