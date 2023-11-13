@@ -8,6 +8,7 @@ public class Hpmanager : MonoBehaviour
     public Image hpmeter;
     public float hpamount = 100f;
     public float knockbackForce = 5f; // Adjust the knockback force as needed
+    public AudioSource heal;
 
 
     private Rigidbody2D rb;
@@ -31,6 +32,7 @@ public class Hpmanager : MonoBehaviour
         {
             if (hpamount < 100)
             {
+                heal.Play();
                 Heal(20); // Adjust the healing amount as needed
                 Destroy(collision.gameObject); // Destroy the first aid kit
                 Debug.Log("Healed");

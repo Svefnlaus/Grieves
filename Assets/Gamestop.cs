@@ -8,6 +8,7 @@ public class Gamestop : MonoBehaviour
     public GameObject player; // Reference to the player GameObject
     public GameObject gameOverCanvas; // Reference to the Canvas GameObject with game over image
     public float screenBoundaryPadding = 1f; // Padding to consider when checking if the player is on the screen
+    public AudioSource go;
 
     private void Awake()
     {
@@ -28,6 +29,7 @@ public class Gamestop : MonoBehaviour
         // Check if the player is outside the screen boundaries
         if (!IsPlayerOnScreen())
         {
+
             // Call the function to handle player death
             HandlePlayerDeath();
         }
@@ -60,6 +62,7 @@ public class Gamestop : MonoBehaviour
         // Enable and show the game over canvas
         if (gameOverCanvas != null)
         {
+            go.Play();
             gameOverCanvas.SetActive(true);
         }
     }

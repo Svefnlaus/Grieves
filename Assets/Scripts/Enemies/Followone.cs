@@ -9,6 +9,7 @@ public class Followone : MonoBehaviour
     private Rigidbody2D rb;
     public movements move;
     [SerializeField] private AudioSource Death;
+    [SerializeField] private AudioSource Death2;
 
     private void Start()
     {
@@ -47,6 +48,7 @@ public class Followone : MonoBehaviour
             Destroy(gameObject);
           
         }
+        
 
     }
 }
