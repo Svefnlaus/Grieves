@@ -43,7 +43,7 @@ public class Bullet : MonoBehaviour
         bold.Play();
         other.TryGetComponent<BossBehavior>(out BossBehavior boss);
         if (boss == null) yield return null;
-        boss.TakeDamage(14);
+        boss.TakeDamage(15);
         yield return new WaitForSeconds(0.01f);
         Destroy(gameObject);
         yield return null;
