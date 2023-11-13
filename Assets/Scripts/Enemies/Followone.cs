@@ -48,7 +48,7 @@ public class Followone : MonoBehaviour
             Destroy(gameObject);
           
         }
-        
+                
 
     }
 }

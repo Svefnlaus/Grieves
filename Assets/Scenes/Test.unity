@@ -4475,6 +4475,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 553234719}
     m_Modifications:
+    - target: {fileID: 3800657244376654577, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 3800657244376654577, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.03
+      objectReference: {fileID: 0}
     - target: {fileID: 3800657244376654578, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
       propertyPath: m_TagString
       value: Ground
@@ -7016,7 +7024,7 @@ GameObject:
   - component: {fileID: 1451358829}
   m_Layer: 5
   m_Name: Boss UI
-  m_TagString: Untagged
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14270,11 +14278,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3800657244376654577, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.31
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 3800657244376654577, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.98
+      value: -0.85
       objectReference: {fileID: 0}
     - target: {fileID: 3800657244376654578, guid: 8ea728571ca56c34a893714fe62f0207, type: 3}
       propertyPath: m_TagString
